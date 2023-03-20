@@ -53,6 +53,9 @@ public class SellerDaoJDBC implements SellerDao{
 			
 			st.setInt(1, id);
 			rs = st.executeQuery();
+			/*
+			 * Será implemntado 2 fuções para que o código seja reutilizado a instanciação
+			 * 
 			if (rs.next()) { //O RS "ResultSet" Next(); é para ver se tem info no banco. Pois se não tiver, ele retorna false
 				Department dep = new Department(); //Instanciamos um novo Departamento 
 				dep.setId(rs.getInt("DepartmentId")); //Aqui primeiro pegamos um ID do departamento
@@ -66,6 +69,12 @@ public class SellerDaoJDBC implements SellerDao{
 				obj.setDepartment(dep); //Como ele tem na tabela a FK da de departamento e seu nome, por isso que fizemos o obj dep
 				return obj; //retornando o objeto gerado. 
 			}
+			*/
+			if (rs.next()) { //O RS "ResultSet" Next(); é para ver se tem info no banco. Pois se não tiver, ele retorna false
+				Department dep = instantiateDepartment(rs);
+				Seller obj = instantiateSeller(rs, dep);
+				return obj; //retornando o objeto gerado. 
+			}
 			return null; 	
 		}
 		catch (SQLException e) {
@@ -76,6 +85,27 @@ public class SellerDaoJDBC implements SellerDao{
 			DB.closeResultSet(rs);
 		}	
 	}
+
+	private Seller instantiateSeller(ResultSet rs, Department dep) throws SQLException{ //Aqui estou propagando o erro já que o exception pegaria acima na implementção {
+		 Seller obj = new Seller();  //Estamos instanciando um novo vendedor
+		 obj.setId(rs.getInt("Id"));
+		 obj.setName(rs.getString("Name"));
+		 obj.setEmail(rs.getString("Email"));
+		 obj.setBaseSalary(rs.getDouble("BaseSalary"));
+		 obj.setBirthDate(rs.getDate("BirthDate"));
+		 obj.setDepartment(dep); //Como ele tem na tabela a FK da de departamento e seu nome, por isso que fizemos o obj dep
+		 return obj; 
+	}
+
+
+	//Criei a função pra instanciar o departamento para que fique fácil nosso reuso nas demais aplicações do CRUD. 
+	private Department instantiateDepartment(ResultSet rs) throws SQLException { 
+		Department dep = new Department(); 
+		dep.setId(rs.getInt("DepartmentId")); 
+		dep.setName(rs.getString("DepName")); 
+		return dep; 
+	}
+
 
 	@Override
 	public List<Seller> findAll() {
