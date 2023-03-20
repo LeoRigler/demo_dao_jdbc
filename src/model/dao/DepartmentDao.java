@@ -6,7 +6,7 @@ import model.entities.Department;
 
 public interface DepartmentDao {
 	/*
-	 * 
+	 * Aqui é a interface do Seller/Department
 	 */
 	
 	void insert(Department obj); 
